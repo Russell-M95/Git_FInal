@@ -1,0 +1,25 @@
+name: Python File Check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check-python:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Check for Python Files
+      run: |
+        for file in $(git diff --name-only ${{ github.event.before }} ${{ github.sha }}); do
+          if file "$file" | grep -q "Python script"; then
+            echo "Found Python file: $file"
+          else
+            echo "Not a Python file: $file"
+            exit 1
+          fi
+        done
